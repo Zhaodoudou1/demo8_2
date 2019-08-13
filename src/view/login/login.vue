@@ -132,12 +132,25 @@
             //从cookie中取出某一个名称的Cookie的值
             par.codekey=this.Cookies.get("authcode")
             this.$axios.post(this.domain.serverpath+"login",par).then((response)=>{
+
               let respo=response.data;
+              console.log(respo.result);
+              console.log("0000000");
+
               if(respo.code==200){
                 //存储token到vuex中，
-                this.$store.state.token=response.data.token
-                this.$store.state.userInfo=response.data.result
-                window.sessionStorage.setItem("userInfo",JSON.stringify(response.data.result))
+
+                this.$store.state.token=respo.token
+                console.log("token"+this.$store.state.token);
+
+                this.$store.state.userInfo=respo.result;
+                window.localStorage.setItem("userInfo",respo.result);
+
+
+                //this.$store.state.userInfo=response.data.result
+                window.sessionStorage.setItem("userid",respo.result.id)//将userid 存入到浏览器的session(相当于后台的session)中
+                window.sessionStorage.setItem("username",respo.result.userName)
+                console.log(window.sessionStorage.getItem("userid"))
                 //关闭加载窗
                 this.$data.percent=100
                 //隐藏进度条
@@ -147,7 +160,9 @@
 
                 //跳转到首页界面
                 //将用户ID存入到全局的VUE对象中
-                this.$router.push({path:'/view/shouye/shouye',query:{username:response.data.result.userName,userid:response.data.result.id}});
+                this.$router.push({path:'/view/show/show',query:{
+                         username:response.data.result.userName,userid:response.data.result.id}
+                });
 
               }else if(respo.error!=null){
                 //关闭加载窗
@@ -272,7 +287,7 @@
           code=response.data.result;
           console.log(code);
           //向浏览器写一个Cookie
-         // document.cookie = 'testCookies' + "=" + response.data.token + "; " + -1;
+          //document.cookie = 'testCookies' + "=" + response.data.token + "; " + -1;
           _this.moveCode(code,_this);
         })
 

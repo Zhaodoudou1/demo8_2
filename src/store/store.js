@@ -6,8 +6,11 @@ Vue.use(Vuex)
 const store=new Vuex.Store({
   state:{
     token:"",
-    userInfo:{}
+    userInfo:{
+
+    }
   }
 })
+
 
 export default store
