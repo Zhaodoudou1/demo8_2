@@ -85,8 +85,8 @@ router.beforeEach((to,from,next)=>{
   //判断是否登录 to.meta.require是true说明需要进行登录的验证
   if(to.meta.require){
     //获取本地存储中的jwt token
-    let token=window.localStorage.getItem("userInfo");
-    if(token!=null){
+    let token=window.sessionStorage.getItem("userInfo");
+    if(token!=""){
       next();
     }else{
       next({path:"/"});//跳转到登录页面

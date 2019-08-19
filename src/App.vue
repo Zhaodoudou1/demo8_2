@@ -6,7 +6,12 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  mounted() {
+    window.addEventListener("unload",()=>{
+      sessionStorage.setItem("state",JSON.stringify(this.$store.state))
+    })
+  }
 }
 </script>
 

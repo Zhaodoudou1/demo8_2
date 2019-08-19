@@ -120,7 +120,6 @@
         save(){
 
           let uri = "";
-          alert(this.entityModel.id)
           if(this.entityModel.id == 0){
             alert("进入添加方法")
             uri = this.domain.ssoserverpath + 'insertMenu';

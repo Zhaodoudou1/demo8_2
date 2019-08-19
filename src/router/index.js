@@ -17,6 +17,8 @@ import menu from '@/view/show/dataList/menu'
 import menuList from '@/view/show/dataList/menuList'
 //导入EXCEL
 import  importFile  from  '@/view/show/dataList/importFile'
+//登陆信息折线图
+import  LoginDate  from  '@/view/show/dataList/LoginDate'
 Vue.use(Router)
 
 
@@ -47,7 +49,8 @@ export default new Router({
         {path:'/dataList/userDate',component:userDate,meta:{require:true}},
         {path:'/dataList/menu',component:menu,meta:{require:true}},
         {path:'/dataList/menuList',component:menuList,meta:{require:true}},
-        {path:'/dataList/importFile',component:importFile,meta:{require:true}}
+        {path:'/dataList/importFile',component:importFile,meta:{require:true}},
+        {path:'/dataList/LoginDate',component:LoginDate,meta:{require:true}}
       ]
     }
   ]

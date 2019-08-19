@@ -71,6 +71,7 @@
                 label="操作"
               >
                 <template slot-scope="scope">
+
                   <el-button type="button" @click="deleteOne(scope.row)">删除</el-button>
                   <el-button type="button" @click="updateOne(scope.row)">编辑</el-button>
                   <el-button type="button" @click="bindingUser(scope.row)">绑定角色</el-button>
@@ -263,7 +264,8 @@
             total:1,//总条数
             role:[],//角色
             value:"",//绑定角色时候  v-model
-            bool:false//验证账号是否唯一开关
+            bool:false,//验证账号是否唯一开关
+            userid : window.sessionStorage.getItem("userid")
           }
       },
       mounted() {
@@ -275,6 +277,7 @@
       },
       methods:{
           selectAll:function () {
+            this.pageInfo.userid = this.userid;
               this.$axios.post(this.domain.ssoserverpath+"selectAll",this.pageInfo).then( (res)=>{
                 this.dataList =res.data.list;
                 this.total =res.data.total;
@@ -287,7 +290,6 @@
         },//当前页发生变化
         handleSizeChange(handleSizeChange){
             this.pageSize = handleSizeChange;
-            alert(handleSizeChange+"每页条数")
           this.selectAll(
             this.pageInfo.pageSize = handleSizeChange
           )
@@ -308,7 +310,7 @@
             })
         },//删除用户
         updateOne:function (list) {
-            this.imageUrl = "http://localhost:8090/"+list.imgUrl
+            this.imageUrl = "http://localhost:8090/"+list.imgUrl+"_25.jpg";
             this.entityMol = list;
             this.dialogFormVisible=true;
         },//点击编辑后 需要做的操作
@@ -328,7 +330,6 @@
           return isJPG && isLt2M;
         },
         save:function(){
-            alert(this.entityMol.id)
             this.$axios.post(this.domain.ssoserverpath+"updateOne",this.entityMol).then( (res)=>{
                   if(res.data.code == 200){
                     this.$message('编辑个人信息成功');
@@ -385,7 +386,9 @@
                     message: '手机号不可以为空'
                   });
                    falg  = false
-          } else  if($("#1pwd").val() != null && $("#2pwd").val() != null){
+          }
+
+          if($("#2pwd").val() != null){
 
               if($("#1pwd").val() == $("#2pwd").val()){
                 this.entityMol.password = $("#1pwd").val();
@@ -433,8 +436,6 @@
         },
         insertOneUser:function () {
           this.entityMol={id:0};
-          $("#1pwd").val()==null;
-          $("#2pwd").val()==null;
           this.FormVisible=true;
         },//添加按钮先做的操作
         saveBinding:function () {
@@ -458,7 +459,6 @@
                 })
         },//绑定角色
         export2Excel() {
-            alert("--------Excel---------")
           require.ensure([], () => {
             const { export_json_to_excel } = require('../../../excel/export2Excel');
             const tHeader = ['序号', '名称', '登陆名称','密码','性别','tel',];
@@ -529,6 +529,9 @@
             });
           }//判断账号是否唯一！
 
+        },
+        open:function () {
+            alert();
         }
 
 

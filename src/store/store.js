@@ -4,7 +4,7 @@ import Vue from "vue"
 Vue.use(Vuex)
 
 const store=new Vuex.Store({
-  state:{
+  state:sessionStorage.getItem("state")?JSON.parse(sessionStorage.getItem("state")):{
     token:"",
     userInfo:{
 

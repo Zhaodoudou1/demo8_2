@@ -23,8 +23,11 @@
             prop="button"
             label="操作">
             <template slot-scope="scope">
-               <el-button type="button" @click="deleteOne(scope.row)">删除</el-button>
-                <el-button type="button" @click="bindingUser(scope.row)">绑定权限</el-button>
+              <span v-if="scope.row.leval <= user.leval"><el-button><span style="color: #ff4373;">无权利进行操作</span></el-button></span>
+              <span v-else>
+                   <el-button type="button" @click="deleteOne(scope.row)">删除</el-button>
+                   <el-button type="button" @click="bindingUser(scope.row)">绑定权限</el-button>
+              </span>
             </template>
           </el-table-column>
         </el-table>
@@ -41,6 +44,7 @@
             <el-input v-model="entityMol.miaoShu" ></el-input>
           </el-form-item>
         </el-form>
+
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogForm = false">取 消</el-button>
           <el-button type="primary" @click="saveBinding()">确 定</el-button>
@@ -114,18 +118,26 @@
               id:'id',
               children: 'menuInfoList',
               label: 'menuName',
-              code:'leval'
+              code:'leval',
             },
             mids:[],
             total:1,
-            username:""//用户名称==》用于删除时是否被绑定名称
+            username:"",//用户名称==》用于删除时是否被绑定名称
+            entity:{},//载体
+            userid:window.sessionStorage.getItem("userid"),//浏览器session 取出当前登陆的userid
+            user:{}//这是一个用户和角色关联查询的sql、主要查询角色的等级，id，名称
           }
         },
       mounted() {
           console.log("角色列表开始加载");
-        this.$axios.post(this.domain.ssoserverpath+"findMenu").then((res)=>{
-          this.menuData = res.data.result;
-        } )
+
+
+            this.entity.userid = this.userid;
+            this.$axios.post(this.domain.ssoserverpath+"findRoleByUserId",this.entity).then( (res)=>{
+
+                    this.user = res.data.result;
+            } )
+
         this.selectAll();
       },
       methods:{
@@ -133,7 +145,6 @@
             this.$axios.post(this.domain.ssoserverpath+"selectAllRoleAndMenu",this.pageInfo).then( (res)=>{
               this.dataList =res.data.list;
               this.total =res.data.total;
-
             } ).catch((error)=>{
               this.$notify.error({
                 title: '错误',
@@ -167,7 +178,8 @@
           this.entityMol={id:0}
         },
         saveBinding:function () {
-
+           this.entityMol.roleids = this.user.roleids;
+           this.entityMol.leval = this.user.leval;
            this.$axios.post(this.domain.ssoserverpath+"insertOneRole",this.entityMol).then( (res)=>{
              if(res.data.code == 200){
                this.$notify({
@@ -186,6 +198,16 @@
            })
         },
         bindingUser:function (list) {
+
+
+          this.$axios.post(this.domain.ssoserverpath+"findMenu",this.user).then((res)=>{//查询权限=》树状
+            this.menuData = res.data.result;
+            console.log(res.data.result);
+          } )
+
+
+
+
               this.mids = null;
               this.updatedialogForm = true;
               this.entityMol = list;
@@ -198,7 +220,6 @@
         Binding:function () {
           let mid=this.$refs.tree.getHalfCheckedKeys()+','+this.$refs.tree.getCheckedKeys();
           this.entityMol.mids = mid;
-          alert(this.entityMol.mids )
           this.$axios.post(this.domain.ssoserverpath+"insertRoleAndMenuAndCentre",this.entityMol).then( (res)=>{
             if(res.data.code == 200){
               this.$notify({
@@ -219,14 +240,12 @@
 
         },
       handleCurrentChange(handleCurrentChange){
-        alert(handleCurrentChange+"当前页发生变化")
         this.selectAll(
           this.pageInfo.pageNum = handleCurrentChange
         )
       },
       handleSizeChange(handleSizeChange){
         this.pageSize = handleSizeChange;
-        alert(handleSizeChange+"每页条数")
         this.selectAll(
           this.pageInfo.pageSize = handleSizeChange
         )

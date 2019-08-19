@@ -105,7 +105,6 @@
     name: "show",
     methods:{
       tttt(){
-        alert("pppp999999");
       },
       openParentClose(){
         //调用子组件menu中的openClose()
